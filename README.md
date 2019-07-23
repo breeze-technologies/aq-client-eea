@@ -1,0 +1,3 @@
+# aq-client-eea
+
+This is a client library for accessing EU air quality data.
