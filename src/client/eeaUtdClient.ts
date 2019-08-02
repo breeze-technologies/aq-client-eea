@@ -1,26 +1,26 @@
 import csv from "csvtojson";
-import { Converter } from "csvtojson/v2/Converter";
+import { CSVParseParam } from "csvtojson/v2/Parameters";
 import request from "request";
-import { CONSTANTS } from "../constants";
+import { EeaConstants } from "../constants";
 import { EeaUtdFetcherConfig } from "../models/eeaUtdFetcherConfig";
 import { Station } from "../models/station";
 import { convertEeaUtdToStation, isValidEeaUtdEntry } from "../utils/eeaUtdHelper";
 import { ClientInterface } from "./clientInterface";
 
 export class EeaUtdClient implements ClientInterface<EeaUtdFetcherConfig> {
-    private csvToJson: Converter;
+    private csvToJsonOptions: CSVParseParam;
     constructor() {
-        this.csvToJson = csv({ nullObject: true });
+        this.csvToJsonOptions = { nullObject: true } as any;
     }
 
-    public fetchLatestData(fetcherConfig: EeaUtdFetcherConfig): Promise<Station[]> {
+    public async fetchLatestData(fetcherConfig: EeaUtdFetcherConfig): Promise<Station[]> {
         const configString = `${fetcherConfig.countryCode}_${fetcherConfig.pollutantCode}.csv`;
-        const downloadUrl = CONSTANTS.BASE_URL_EEA_UTD + configString;
+        const downloadUrl = EeaConstants.BASE_URL_UTD + configString;
 
-        return this.downloadData(downloadUrl)
-            .then(this.csvToJson.fromString)
-            .then((rawData) => rawData.filter(isValidEeaUtdEntry))
-            .then((validatedData) => validatedData.map(convertEeaUtdToStation));
+        const stringData = await this.downloadData(downloadUrl);
+        const rawData = await csv(this.csvToJsonOptions).fromString(stringData);
+        const validatedData = rawData.filter((d) => isValidEeaUtdEntry(d));
+        return validatedData.map(convertEeaUtdToStation);
     }
 
     private downloadData(downloadUrl: string) {

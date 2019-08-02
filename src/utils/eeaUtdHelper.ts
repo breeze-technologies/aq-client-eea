@@ -48,10 +48,10 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
         validationFields.filter((field) => {
             const value = (entry as any)[field];
             if (value === undefined || value === null) {
-                return true;
+                return false;
             }
-            return false;
-        }).length === 0;
+            return true;
+        }).length === validationFields.length;
     if (!fieldsSufficientlyDefined) {
         return false;
     }
@@ -66,15 +66,18 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
         return false;
     }
 
-    if (!isNumber(entry.value_numeric) || entry.value_numeric < 0) {
+    const valueNum = parseFloat(entry.value_numeric);
+    if (isNaN(valueNum) || valueNum < 0) {
         return false;
     }
 
-    if (entry.value_unit !== "ug_m3") {
+    if (entry.value_unit !== "ug/m3" && entry.value_unit !== "mg/m3") {
+        console.log(entry.station_localid, "unit", entry.value_unit);
         return false;
     }
 
-    if (entry.coordsys !== "ESPG:4979") {
+    if (entry.coordsys !== "EPSG:4979") {
+        console.log(entry.station_localid, "coordsys", entry.coordsys);
         return false;
     }
 

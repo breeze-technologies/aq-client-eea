@@ -1,7 +1,7 @@
-export const CONSTANTS = {
-    BASE_URL_EEA_UTD: "http://discomap.eea.europa.eu/map/fme/latest/",
-    EEA_POLLUTANT_CODES: ["PM10", "PM2.5", "CO", "SO2", "NO2", "O3", "NH3", "NO"],
-    EEA_COUNTRY_CODES: [
+export const EeaConstants = {
+    BASE_URL_UTD: "http://discomap.eea.europa.eu/map/fme/latest/",
+    POLLUTANT_CODES: ["PM10", "PM2.5", "CO", "SO2", "NO2", "O3", "NH3", "NO"],
+    COUNTRY_CODES: [
         "BG",
         "CY",
         "CZ",
