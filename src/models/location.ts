@@ -4,7 +4,7 @@ export interface Location {
     altitude?: number;
 
     countryCode: string;
-    country: string;
+    country?: string;
     zipCode?: string;
     city?: string;
     streetName?: string;
