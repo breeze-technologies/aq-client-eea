@@ -5,6 +5,7 @@ import { EeaConstants } from "../constants";
 import { EeaUtdFetcherConfig } from "../models/eeaUtdFetcherConfig";
 import { Station } from "../models/station";
 import { convertEeaUtdToStation, isValidEeaUtdEntry } from "../utils/eeaUtdHelper";
+import { convertIsoBufferToUtf8String } from "../utils/stringEncoder";
 import { ClientInterface } from "./clientInterface";
 
 export class EeaUtdClient implements ClientInterface<EeaUtdFetcherConfig> {
@@ -17,15 +18,16 @@ export class EeaUtdClient implements ClientInterface<EeaUtdFetcherConfig> {
         const configString = `${fetcherConfig.countryCode}_${fetcherConfig.pollutantCode}.csv`;
         const downloadUrl = EeaConstants.BASE_URL_UTD + configString;
 
-        const stringData = await this.downloadData(downloadUrl);
+        const dataBuffer = await this.downloadData(downloadUrl);
+        const stringData = convertIsoBufferToUtf8String(dataBuffer);
         const rawData = await csv(this.csvToJsonOptions).fromString(stringData);
         const validatedData = rawData.filter((d) => isValidEeaUtdEntry(d));
         return validatedData.map(convertEeaUtdToStation);
     }
 
     private downloadData(downloadUrl: string) {
-        return new Promise<string>((resolve, reject) => {
-            request(downloadUrl, async (error, response, body) => {
+        return new Promise<Buffer>((resolve, reject) => {
+            request(downloadUrl, { encoding: null }, async (error, response, body) => {
                 if (error) {
                     reject(error);
                     return;
