@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { isNumber } from "util";
 import { EeaUtdEntry } from "../models/eeaUtdEntry";
 import { Station } from "../models/station";
@@ -18,6 +18,10 @@ const validationFields = [
 ];
 
 export function convertEeaUtdToStation(entry: EeaUtdEntry): Station {
+    const timezoneOffset = extractTimezone(entry) || "+00:00";
+    const dateStart = adjustDateToTimezoneOffset(entry.value_datetime_begin, timezoneOffset);
+    const dateEnd = adjustDateToTimezoneOffset(entry.value_datetime_end, timezoneOffset);
+
     return {
         id: entry.station_localid,
         name: entry.station_name,
@@ -28,8 +32,8 @@ export function convertEeaUtdToStation(entry: EeaUtdEntry): Station {
         },
         measurements: [
             {
-                dateStart: moment(entry.value_datetime_begin),
-                dateEnd: moment(entry.value_datetime_end),
+                dateStart,
+                dateEnd,
                 indicator: pollutantToIndicatorKey(entry.pollutant),
                 value: parseFloat(entry.value_numeric),
                 unit: entry.value_unit,
@@ -56,8 +60,14 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
         return false;
     }
 
-    const startDate = moment(entry.value_datetime_begin);
-    const endDate = moment(entry.value_datetime_end);
+    const timezoneOffset = extractTimezone(entry);
+    if (!timezoneOffset) {
+        return false;
+    }
+
+    const startDate = adjustDateToTimezoneOffset(entry.value_datetime_begin, timezoneOffset);
+    const endDate = adjustDateToTimezoneOffset(entry.value_datetime_end, timezoneOffset);
+
     if (!startDate.isValid() || !endDate.isValid()) {
         return false;
     }
@@ -109,4 +119,28 @@ function pollutantToIndicatorKey(pollutantKey: string) {
         default:
             return "";
     }
+}
+
+function extractTimezone(entry: EeaUtdEntry): string | null {
+    if (!entry.network_timezone) {
+        return null;
+    }
+
+    const timezoneDefUrl = entry.network_timezone;
+    const timezoneDefOffset = timezoneDefUrl.replace("http://dd.eionet.europa.eu/vocabulary/aq/timezone/UTC", "");
+
+    if (
+        timezoneDefOffset === "" ||
+        timezoneDefOffset.length !== 3 ||
+        (!timezoneDefOffset.startsWith("+") && !timezoneDefOffset.startsWith("-"))
+    ) {
+        return "+00:00";
+    }
+    return timezoneDefOffset + ":00";
+}
+
+function adjustDateToTimezoneOffset(dateString: string, timezoneOffset: string): Moment {
+    const date = moment.parseZone(dateString);
+    date.utcOffset(timezoneOffset);
+    return date;
 }
