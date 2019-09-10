@@ -1,5 +1,6 @@
 export { ClientInterface } from "./client/clientInterface";
 export { EeaUtdClient } from "./client/eeaUtdClient";
+export { EeaUtdFetcherConfig } from "./models/eeaUtdFetcherConfig";
 export { Station } from "./models/station";
 export { Measurement } from "./models/measurement";
 export { Location } from "./models/location";
