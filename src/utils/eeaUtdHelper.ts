@@ -1,5 +1,4 @@
 import moment, { Moment } from "moment";
-import { isNumber } from "util";
 import { EeaUtdEntry } from "../models/eeaUtdEntry";
 import { Station } from "../models/station";
 
