@@ -1,4 +1,4 @@
-export interface EeaUtdEntry {
+export type EeaUtdEntry = {
     network_countrycode: string;
     network_localid: string;
     network_name: string;
@@ -23,4 +23,4 @@ export interface EeaUtdEntry {
     value_verification: string;
     station_altitude: string;
     value_unit: string;
-}
+};
