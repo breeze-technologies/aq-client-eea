@@ -1,4 +1,4 @@
-export interface EeaUtdFetcherConfig {
+export type EeaUtdFetcherConfig = {
     countryCode: string;
     pollutantCode: string;
-}
+};
