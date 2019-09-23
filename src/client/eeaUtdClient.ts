@@ -4,11 +4,12 @@ import { EeaUtdFetcherConfig } from "../models/eeaUtdFetcherConfig";
 import { Station } from "../models/station";
 import { convertCsvStringToJsonArray } from "../utils/csv";
 import { downloadDataToBuffer } from "../utils/download";
-import { convertEeaUtdToStation, isValidEeaUtdEntry } from "../utils/eeaUtdHelper";
+import { convertEeaUtdToStation, indicatorToPollutantCode, isValidEeaUtdEntry } from "../utils/eeaUtdHelper";
 import { convertIsoBufferToUtf8String } from "../utils/stringEncoder";
 
 export async function fetchLatestData(fetcherConfig: EeaUtdFetcherConfig): Promise<Station[]> {
-    const { countryCode, pollutantCode } = fetcherConfig;
+    const countryCode = fetcherConfig.countryCode;
+    const pollutantCode = indicatorToPollutantCode(fetcherConfig.pollutantCode);
     const configString = `${countryCode}_${pollutantCode}.csv`;
     const downloadUrl = EEA_BASE_URL_UTD + configString;
 

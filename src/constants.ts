@@ -6,7 +6,7 @@ export const EEA_UNIT_MG_M3 = "mg/m3";
 export const EEA_VALID_UNITS = [EEA_UNIT_UG_M3, EEA_UNIT_MG_M3];
 export const EEA_VALID_COORDSYS = "EPSG:4979";
 
-export const POLLUTANT_CODES = ["PM10", "PM2.5", "CO", "SO2", "NO2", "O3", "NH3", "NO"];
+export const POLLUTANT_CODES = ["pm10", "pm2.5", "co", "so2", "no2", "o3", "nh3", "no"];
 export const COUNTRY_CODES = [
     "BG",
     "CY",
