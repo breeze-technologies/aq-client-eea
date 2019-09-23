@@ -86,7 +86,7 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
         return false;
     }
 
-    if (EEA_VALID_UNITS.filter((u) => entry.value_unit === u).length > 0) {
+    if (EEA_VALID_UNITS.find((u) => entry.value_unit === u)) {
         return false;
     }
 
