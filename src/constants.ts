@@ -3,7 +3,7 @@ export const EEA_TIMEZONE_DEFINITION_BASE_URL = "http://dd.eionet.europa.eu/voca
 export const EEA_TIMEZONE_DEFAULT_OFFSET = "+00:00";
 export const EEA_UNIT_UG_M3 = "ug/m3";
 export const EEA_UNIT_MG_M3 = "mg/m3";
-export const EEA_VALID_UNITS = [EEA_UNIT_UG_M3, EEA_UNIT_UG_M3];
+export const EEA_VALID_UNITS = [EEA_UNIT_UG_M3, EEA_UNIT_MG_M3];
 export const EEA_VALID_COORDSYS = "EPSG:4979";
 
 export const POLLUTANT_CODES = ["PM10", "PM2.5", "CO", "SO2", "NO2", "O3", "NH3", "NO"];
