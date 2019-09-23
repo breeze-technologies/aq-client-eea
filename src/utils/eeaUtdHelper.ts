@@ -101,7 +101,7 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
     return true;
 }
 
-function pollutantToIndicatorKey(pollutantKey: string) {
+export function pollutantToIndicatorKey(pollutantKey: string) {
     switch (pollutantKey) {
         case "PM10":
             return "pm10";
@@ -119,6 +119,29 @@ function pollutantToIndicatorKey(pollutantKey: string) {
             return "nh3";
         case "NO":
             return "no";
+        default:
+            return "";
+    }
+}
+
+export function indicatorToPollutantCode(indicatorKey: string) {
+    switch (indicatorKey) {
+        case "pm10":
+            return "PM10";
+        case "pm2.5":
+            return "PM2.5";
+        case "co":
+            return "CO";
+        case "so2":
+            return "SO2";
+        case "no2":
+            return "NO2";
+        case "o3":
+            return "O3";
+        case "nh3":
+            return "NH3";
+        case "no":
+            return "NO";
         default:
             return "";
     }
