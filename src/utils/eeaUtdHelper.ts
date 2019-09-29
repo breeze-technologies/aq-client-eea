@@ -1,7 +1,12 @@
-import moment from "moment";
-import { isNumber } from "util";
+import {
+    EEA_TIMEZONE_DEFAULT_OFFSET,
+    EEA_TIMEZONE_DEFINITION_BASE_URL,
+    EEA_VALID_COORDSYS,
+    EEA_VALID_UNITS,
+} from "../constants";
 import { EeaUtdEntry } from "../models/eeaUtdEntry";
 import { Station } from "../models/station";
+import { convertStringToDateWithTimezone, isDateSameOrBefore } from "./date";
 
 const validationFields = [
     "network_countrycode",
@@ -18,6 +23,10 @@ const validationFields = [
 ];
 
 export function convertEeaUtdToStation(entry: EeaUtdEntry): Station {
+    const timezoneOffset = extractEeaTimezone(entry) || EEA_TIMEZONE_DEFAULT_OFFSET;
+    const dateStart = convertStringToDateWithTimezone(entry.value_datetime_begin, timezoneOffset) as Date;
+    const dateEnd = convertStringToDateWithTimezone(entry.value_datetime_end, timezoneOffset) as Date;
+
     return {
         id: entry.station_localid,
         name: entry.station_name,
@@ -28,8 +37,8 @@ export function convertEeaUtdToStation(entry: EeaUtdEntry): Station {
         },
         measurements: [
             {
-                dateStart: moment(entry.value_datetime_begin),
-                dateEnd: moment(entry.value_datetime_end),
+                dateStart,
+                dateEnd,
                 indicator: pollutantToIndicatorKey(entry.pollutant),
                 value: parseFloat(entry.value_numeric),
                 unit: entry.value_unit,
@@ -56,13 +65,19 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
         return false;
     }
 
-    const startDate = moment(entry.value_datetime_begin);
-    const endDate = moment(entry.value_datetime_end);
-    if (!startDate.isValid() || !endDate.isValid()) {
+    const timezoneOffset = extractEeaTimezone(entry);
+    if (!timezoneOffset) {
         return false;
     }
 
-    if (endDate.isSameOrBefore(startDate)) {
+    const startDate = convertStringToDateWithTimezone(entry.value_datetime_begin, timezoneOffset);
+    const endDate = convertStringToDateWithTimezone(entry.value_datetime_end, timezoneOffset);
+
+    if (!startDate || !endDate) {
+        return false;
+    }
+
+    if (isDateSameOrBefore(endDate, startDate)) {
         return false;
     }
 
@@ -71,13 +86,11 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
         return false;
     }
 
-    if (entry.value_unit !== "ug/m3" && entry.value_unit !== "mg/m3") {
-        console.log(entry.station_localid, "unit", entry.value_unit);
+    if (!EEA_VALID_UNITS.find((u) => entry.value_unit === u)) {
         return false;
     }
 
-    if (entry.coordsys !== "EPSG:4979") {
-        console.log(entry.station_localid, "coordsys", entry.coordsys);
+    if (entry.coordsys !== EEA_VALID_COORDSYS) {
         return false;
     }
 
@@ -88,7 +101,7 @@ export function isValidEeaUtdEntry(entry: EeaUtdEntry): boolean {
     return true;
 }
 
-function pollutantToIndicatorKey(pollutantKey: string) {
+export function pollutantToIndicatorKey(pollutantKey: string) {
     switch (pollutantKey) {
         case "PM10":
             return "pm10";
@@ -109,4 +122,45 @@ function pollutantToIndicatorKey(pollutantKey: string) {
         default:
             return "";
     }
+}
+
+export function indicatorToPollutantCode(indicatorKey: string) {
+    switch (indicatorKey) {
+        case "pm10":
+            return "PM10";
+        case "pm2.5":
+            return "PM2.5";
+        case "co":
+            return "CO";
+        case "so2":
+            return "SO2";
+        case "no2":
+            return "NO2";
+        case "o3":
+            return "O3";
+        case "nh3":
+            return "NH3";
+        case "no":
+            return "NO";
+        default:
+            return "";
+    }
+}
+
+function extractEeaTimezone(entry: EeaUtdEntry): string | null {
+    if (!entry.network_timezone) {
+        return null;
+    }
+
+    const timezoneDefUrl = entry.network_timezone;
+    const timezoneDefOffset = timezoneDefUrl.replace(EEA_TIMEZONE_DEFINITION_BASE_URL, "");
+
+    if (
+        timezoneDefOffset === "" ||
+        timezoneDefOffset.length !== 3 ||
+        (!timezoneDefOffset.startsWith("+") && !timezoneDefOffset.startsWith("-"))
+    ) {
+        return EEA_TIMEZONE_DEFAULT_OFFSET;
+    }
+    return timezoneDefOffset + ":00";
 }

@@ -2,7 +2,7 @@ import { Location } from "./location";
 import { Measurement } from "./measurement";
 import { Source } from "./source";
 
-export interface Station {
+export type Station = {
     id: string;
     name: string;
 
@@ -11,4 +11,4 @@ export interface Station {
     measurements: Measurement[];
 
     misc?: { [key: string]: any };
-}
+};

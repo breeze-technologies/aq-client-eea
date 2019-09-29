@@ -1,9 +1,9 @@
-export { ClientInterface } from "./client/clientInterface";
-export { EeaUtdClient } from "./client/eeaUtdClient";
+export { fetchLatestData } from "./client/eeaUtdClient";
+export { EeaUtdFetcherConfig } from "./models/eeaUtdFetcherConfig";
 export { Station } from "./models/station";
 export { Measurement } from "./models/measurement";
 export { Location } from "./models/location";
 export { Indicator } from "./models/indicator";
 export { Source } from "./models/source";
 
-export * from "./constants";
+export { POLLUTANT_CODES, COUNTRY_CODES } from "./constants";
