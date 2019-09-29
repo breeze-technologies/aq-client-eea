@@ -1,9 +1,7 @@
-import { Moment } from "moment";
-
-export interface Measurement {
+export type Measurement = {
     indicator: string;
-    dateStart: Date | Moment;
-    dateEnd: Date | Moment;
+    dateStart: Date;
+    dateEnd: Date;
     value: number;
     unit: string;
-}
+};

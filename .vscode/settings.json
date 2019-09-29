@@ -1,5 +1,12 @@
 {
     "cSpell.words": [
-        "epsg"
+        "COORDSYS",
+        "EUPL",
+        "countrycode",
+        "datetime",
+        "epsg",
+        "localid",
+        "prefilters",
+        "samplingpoint"
     ]
 }

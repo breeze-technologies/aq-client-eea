@@ -1,4 +1,4 @@
-export interface Indicator {
+export type Indicator = {
     key: string;
     name: string;
-}
+};
