@@ -1,6 +1,6 @@
 {
     "name": "aq-client-eea",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "This is a client library for accessing EU air quality data.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
